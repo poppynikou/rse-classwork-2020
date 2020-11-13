@@ -29,27 +29,23 @@ import pytest
 import yaml
 
 
-with open('fixture.yaml') as yaml_file:
+with open('fixture.yaml', 'r') as yaml_file:
     times_lists =  yaml.safe_load(yaml_file)
     
-print(times_lists['time_points']['expected'])
+# you only need to input the values into pytest once to them use in your functions
+# test_name will be a dictionary 
+@pytest.mark.parametrize("test_name", times_lists)
+
+def test_time_no_overlap(test_name):
+   
+    properties = list(times_lists.values())[0]
+    start_time = time_range(*properties['time_range_1'])
+    end_time = time_range(*properties['time_range_2'])
+    expected_overlap = [(start,stop) for start,stop in properties['expected']]
+    assert compute_overlap_time(start_time, end_time ) == expected_overlap
 
 
-@pytest.mark.parametrize("starttime, endtime, expected",
- [(times_lists['time_points']['start_time'], times_lists['time_points']['end_time'], [(times_lists['time_points']['expected'][0], times_lists['time_points']['expected'][1])]
- )]
- )
-def test_range(starttime, endtime, expected):
-    assert time_range(starttime, endtime) == expected
-
-@pytest.mark.parametrize("range1, range2, expected",
-[(time_range(times_lists['no_overlap']['time_range_1'][0], times_lists['no_overlap']['time_range_1'][1]),
-  time_range(times_lists['no_overlap']['time_range_2'][0], times_lists['no_overlap']['time_range_2'][1],times_lists['no_overlap']['time_range_2'][2],times_lists['no_overlap']['time_range_2'][3]),
-  [(times_lists['no_overlap']['expected'][0],times_lists['no_overlap']['expected'][1]), (times_lists['no_overlap']['expected'][2], times_lists['no_overlap']['expected'][3])]
-  
-)]
-
-)
-
-def test_overlap(range1, range2, expected):
-    assert compute_overlap_time(range1,range2) == expected
+def test_negative_time_range():
+   with pytest.raises(ValueError) as e:
+        time_range("2010-01-12 10:00:00", "2010-01-12 09:30:00")
+        assert e.match('The end of the time range has to come strictly after its start.')
