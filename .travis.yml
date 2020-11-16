@@ -3,7 +3,7 @@ python:
 - "3.8"
 install:
 - pip3 install numpy
-- pip3 install yaml
+- pip3 install pyyaml
 - pip3 install times
 - pip3 install datetime
 script: 
