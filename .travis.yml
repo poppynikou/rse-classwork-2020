@@ -2,10 +2,8 @@ language: python
 python: 
 - "3.8"
 install:
-- pip3 install numpy
+- pip3 install numpy, yaml, times, datetime
 script: 
 - pytest # run tests
-- yaml
-- times
 after_success:
 - codecov # submit coverage
