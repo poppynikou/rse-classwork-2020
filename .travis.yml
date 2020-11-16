@@ -4,4 +4,6 @@ python:
 install:
 - pip3 install numpy
 script: 
-- pytest --cov coveralls --cov-report 
+- pytest # run tests
+after_success:
+- codecov # submit coverage
